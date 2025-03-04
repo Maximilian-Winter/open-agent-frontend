@@ -73,12 +73,12 @@ export default function ChatInterface() {
   }, [input]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] rounded-lg border border-border overflow-hidden bg-background">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className="flex flex-col h-[calc(100vh-4rem)]  border border-border overflow-hidden bg-background">
+      <div className="flex-1 overflow-y-auto p-4 ">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
             <Bot size={48} className="mb-4 opacity-50" />
-            <p className="text-center max-w-md">Begin your journey of discovery. What would you like to explore today?</p>
+            <p className="text-center max-w-md">What would you like to explore today?</p>
           </div>
         ) : (
           messages.map((message, index) => (
@@ -119,7 +119,7 @@ export default function ChatInterface() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Share your thoughts..."
+            placeholder="Write your message..."
             className="min-h-10 flex-1 resize-none overflow-hidden"
             rows={1}
           />
