@@ -7,60 +7,42 @@ import {
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bot, Search, MessageSquare, Star, Clock, Plus } from 'lucide-react';
-
-interface Chat {
-  id: string;
-  name: string;
-  lastMessage: string;
-  timestamp: Date;
-  starred: boolean;
-}
+import { getChats } from '@/lib/api';
+import { Chat } from '@/lib/types';
 
 export default function AllChatsPage() {
-  // Use state with empty initial array to prevent hydration mismatch
   const [chats, setChats] = useState<Chat[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Initialize data on client side only to prevent hydration mismatch
+  // Fetch chats from API
   useEffect(() => {
-    setChats([
-      {
-        id: '1',
-        name: 'Project Ideas',
-        lastMessage: 'Can you suggest some project ideas for a machine learning portfolio?',
-        timestamp: new Date(2023, 5, 15),
-        starred: true,
-      },
-      {
-        id: '2',
-        name: 'Code Review',
-        lastMessage: 'Here is my React component. Can you review it?',
-        timestamp: new Date(2023, 5, 16),
-        starred: false,
-      },
-      {
-        id: '3',
-        name: 'Learning Path',
-        lastMessage: 'What is the best way to learn TypeScript?',
-        timestamp: new Date(2023, 5, 17),
-        starred: true,
-      },
-    ]);
-    setIsClient(true);
+    async function fetchChats() {
+      try {
+        setIsLoading(true);
+        const { data } = await getChats();
+        setChats(data);
+      } catch (err) {
+        console.error('Error fetching chats:', err);
+        setError('Failed to load chats');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    fetchChats();
   }, []);
 
   const filteredChats = chats.filter(chat => 
-    chat.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+    chat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -99,10 +81,19 @@ export default function AllChatsPage() {
           />
         </div>
         
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {!isClient ? (
-            // Loading state when client-side rendering hasn't happened yet
-            Array(3).fill(0).map((_, i) => (
+        {error ? (
+          <div className="flex flex-col items-center justify-center p-10 text-center">
+            <p className="text-red-500 mb-4">{error}</p>
+            <Link href="/new_chat">
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" /> Try creating a new chat
+              </Button>
+            </Link>
+          </div>
+        ) : isLoading ? (
+          // Loading state
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {Array(3).fill(0).map((_, i) => (
               <Card key={i} className="h-32 hover:bg-secondary/50 transition-colors cursor-pointer animate-pulse">
                 <CardHeader className="pb-2">
                   <div className="h-4 w-24 bg-muted rounded mb-2"></div>
@@ -113,9 +104,11 @@ export default function AllChatsPage() {
                   <div className="h-3 w-4/5 bg-muted rounded mt-2"></div>
                 </CardContent>
               </Card>
-            ))
-          ) : filteredChats.length > 0 ? (
-            filteredChats.map((chat) => (
+            ))}
+          </div>
+        ) : filteredChats.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {filteredChats.map((chat) => (
               <Link href={`/chats/${chat.id}`} key={chat.id} className="block">
                 <Card className="h-full hover:bg-secondary/50 transition-colors cursor-pointer">
                   <CardHeader className="pb-2">
@@ -128,28 +121,30 @@ export default function AllChatsPage() {
                     </div>
                     <CardDescription className="flex items-center gap-2">
                       <Clock className="h-3 w-3" />
-                      {chat.timestamp.toLocaleDateString()}
+                      {new Date(chat.lastMessageAt).toLocaleDateString()}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{chat.lastMessage}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      Project: {chat.projectId}
+                    </p>
                   </CardContent>
                 </Card>
               </Link>
-            ))
-          ) : (
-            <div className="col-span-full flex flex-col items-center justify-center p-10 text-center">
-              <Bot className="h-16 w-16 mb-4 text-muted-foreground/50" />
-              <h3 className="text-xl font-medium mb-2">No chats found</h3>
-              <p className="text-muted-foreground mb-4">Start a new conversation or adjust your search.</p>
-              <Link href="/new_chat">
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" /> Create your first chat
-                </Button>
-              </Link>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="col-span-full flex flex-col items-center justify-center p-10 text-center">
+            <Bot className="h-16 w-16 mb-4 text-muted-foreground/50" />
+            <h3 className="text-xl font-medium mb-2">No chats found</h3>
+            <p className="text-muted-foreground mb-4">Start a new conversation or adjust your search.</p>
+            <Link href="/new_chat">
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" /> Create your first chat
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

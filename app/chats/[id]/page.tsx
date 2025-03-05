@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -5,20 +8,49 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import ChatInterface from "@/components/chat-interface";
+import { getChat, getChatMessages } from "@/lib/api";
+import { Chat, Message } from "@/lib/types";
 
 interface ChatPageProps {
-  params: Promise<{
+  params: {
     id: string;
-  }>;
+  };
 }
 
-export default async function ChatPage(props: ChatPageProps) {
-  const params = await props.params;
+export default function ChatPage({ params }: ChatPageProps) {
   const { id } = params;
+  const [chat, setChat] = useState<Chat | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadChatData() {
+      try {
+        setIsLoading(true);
+        
+        // Fetch the chat data
+        const { data: chatData } = await getChat(id);
+        setChat(chatData);
+        
+        // Fetch the chat messages
+        const { data: messageData } = await getChatMessages(id);
+        setMessages(messageData);
+        
+      } catch (err) {
+        console.error('Error loading chat data:', err);
+        setError('Failed to load chat data');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    loadChatData();
+  }, [id]);
 
   return (
     <div>
@@ -35,13 +67,22 @@ export default async function ChatPage(props: ChatPageProps) {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden text-slate-500 md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-slate-300">Chat {id}</BreadcrumbPage>
+                <BreadcrumbPage className="text-slate-300">
+                  {isLoading ? 'Loading...' : chat?.name || `Chat ${id}`}
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
       </header>
-      <ChatInterface />
+      
+      {error ? (
+        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+          <p className="text-red-500">{error}</p>
+        </div>
+      ) : (
+        <ChatInterface chatId={id} initialMessages={messages} />
+      )}
     </div>
   );
 }
