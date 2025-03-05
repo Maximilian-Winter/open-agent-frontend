@@ -11,14 +11,15 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import ChatInterface from "@/components/chat-interface";
 
 interface ChatPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function ChatPage({ params }: ChatPageProps) {
+export default async function ChatPage(props: ChatPageProps) {
+  const params = await props.params;
   const { id } = params;
-  
+
   return (
     <div>
       <header className="flex h-16 shrink-0 items-center gap-2 border-b border-slate-700 bg-dark-600 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
