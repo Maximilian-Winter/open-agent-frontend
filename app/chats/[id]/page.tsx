@@ -29,8 +29,8 @@ export default async function ChatPage(props: ChatPageProps) {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/chats" className="text-slate-300 hover:text-slate-100">
-                  Chats
+                <BreadcrumbLink href="/all_chats" className="text-slate-300 hover:text-slate-100">
+                  All Chats
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden text-slate-500 md:block" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Breadcrumb,
@@ -25,25 +25,31 @@ interface Chat {
 }
 
 export default function StarredChatsPage() {
-  // Example chat data
-  const [chats, setChats] = useState<Chat[]>([
-    {
-      id: '1',
-      name: 'Project Ideas',
-      lastMessage: 'Can you suggest some project ideas for a machine learning portfolio?',
-      timestamp: new Date(2023, 5, 15),
-      starred: true,
-    },
-    {
-      id: '3',
-      name: 'Learning Path',
-      lastMessage: 'What is the best way to learn TypeScript?',
-      timestamp: new Date(2023, 5, 17),
-      starred: true,
-    },
-  ]);
-
+  // Use state with empty initial array to prevent hydration mismatch
+  const [chats, setChats] = useState<Chat[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isClient, setIsClient] = useState(false);
+
+  // Initialize data on client side only to prevent hydration mismatch
+  useEffect(() => {
+    setChats([
+      {
+        id: '1',
+        name: 'Project Ideas',
+        lastMessage: 'Can you suggest some project ideas for a machine learning portfolio?',
+        timestamp: new Date(2023, 5, 15),
+        starred: true,
+      },
+      {
+        id: '3',
+        name: 'Learning Path',
+        lastMessage: 'What is the best way to learn TypeScript?',
+        timestamp: new Date(2023, 5, 17),
+        starred: true,
+      },
+    ]);
+    setIsClient(true);
+  }, []);
 
   const filteredChats = chats.filter(chat => 
     (chat.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -88,7 +94,21 @@ export default function StarredChatsPage() {
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredChats.length > 0 ? (
+          {!isClient ? (
+            // Loading state when client-side rendering hasn't happened yet
+            Array(2).fill(0).map((_, i) => (
+              <Card key={i} className="h-32 hover:bg-secondary/50 transition-colors cursor-pointer animate-pulse">
+                <CardHeader className="pb-2">
+                  <div className="h-4 w-24 bg-muted rounded mb-2"></div>
+                  <div className="h-3 w-20 bg-muted rounded opacity-70"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-3 w-full bg-muted rounded mt-2"></div>
+                  <div className="h-3 w-4/5 bg-muted rounded mt-2"></div>
+                </CardContent>
+              </Card>
+            ))
+          ) : filteredChats.length > 0 ? (
             filteredChats.map((chat) => (
               <Link href={`/chats/${chat.id}`} key={chat.id} className="block">
                 <Card className="h-full hover:bg-secondary/50 transition-colors cursor-pointer">
