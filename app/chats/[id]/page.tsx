@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,12 +16,13 @@ import { getChat, getChatMessages } from "@/lib/api";
 import { Chat, Message } from "@/lib/types";
 
 interface ChatPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function ChatPage({ params }: ChatPageProps) {
+export default function ChatPage(props: ChatPageProps) {
+  const params = use(props.params);
   const { id } = params;
   const [chat, setChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
