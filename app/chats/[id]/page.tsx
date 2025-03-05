@@ -50,7 +50,7 @@ export default function ChatPage(props: ChatPageProps) {
       }
     }
     
-    loadChatData();
+    loadChatData().then(r => console.log("42"));
   }, [id]);
 
   return (
