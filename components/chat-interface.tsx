@@ -1,23 +1,46 @@
 // components/ChatInterface.tsx
 'use client';
-
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Message } from '@/lib/types';
-import { sendMessage, getAssistantResponse } from '@/lib/api';
+import {Chat, Message} from '@/lib/types';
+import {sendMessage, getAssistantResponse, getChat, getChatMessages} from '@/lib/api';
 
 interface ChatInterfaceProps {
   chatId: string;
-  initialMessages?: Message[];
 }
 
-export default function ChatInterface({ chatId, initialMessages = [] }: ChatInterfaceProps) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+export default function ChatInterface({ chatId }: ChatInterfaceProps) {
+  const [chat, setChat] = useState<Chat | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    async function loadChatData() {
+      try {
+        setIsLoading(true);
+
+        // Fetch the chat data
+        const { data: chatData } = await getChat(chatId);
+        setChat(chatData);
+        console.log("chatData", chatData);
+        // Fetch the chat messages
+        const { data: messageData } = await getChatMessages(chatId);
+        setMessages(messageData);
+        console.log("messageData", messageData);
+      } catch (err) {
+        console.error('Error loading chat data:', err);
+        setError('Failed to load chat data');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadChatData();
+  }, [chatId]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
