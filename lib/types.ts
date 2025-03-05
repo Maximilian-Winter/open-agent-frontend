@@ -13,7 +13,6 @@ export interface Project {
   name: string;
   description: string;
   userId: string;
-  user: User;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,7 +23,7 @@ export interface Agent {
   name: string;
   description: string;
   instructions: string; // System message
-  user?: User;
+  userId?: string; // Only set when agent created by user
   createdAt: Date;
   updatedAt: Date;
 }

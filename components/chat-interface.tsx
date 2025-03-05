@@ -13,7 +13,7 @@ interface ChatInterfaceProps {
 }
 
 export default function ChatInterface({ chatId }: ChatInterfaceProps) {
-  const [chat, setChat] = useState<Chat | null>(null);
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,15 +22,9 @@ export default function ChatInterface({ chatId }: ChatInterfaceProps) {
     async function loadChatData() {
       try {
         setIsLoading(true);
-
-        // Fetch the chat data
-        const { data: chatData } = await getChat(chatId);
-        setChat(chatData);
-        console.log("chatData", chatData);
         // Fetch the chat messages
         const { data: messageData } = await getChatMessages(chatId);
         setMessages(messageData);
-        console.log("messageData", messageData);
       } catch (err) {
         console.error('Error loading chat data:', err);
         setError('Failed to load chat data');

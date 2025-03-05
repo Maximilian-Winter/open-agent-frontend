@@ -17,8 +17,7 @@ import {
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+
 import {
   Sidebar,
   SidebarContent,
@@ -27,13 +26,16 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import {ModeToggle} from "@/components/theme_button";
+import {getProjects} from "@/lib/api";
+import {useEffect, useState} from "react";
+import {Message, Project} from "@/lib/types";
 
 // This is sample data.
 const data = {
   navMain: [
     {
       title: "Chats",
-      url: "/chats",
+      url: "/all_chats",
       icon: MessageSquareQuote,
       isActive: true,
       items: [{
@@ -56,7 +58,7 @@ const data = {
     },
     {
       title: "Agents",
-      url: "/agents",
+      url: "/all_agents",
       icon: Bot,
       items: [
         {
@@ -115,31 +117,24 @@ const data = {
         },
       ],
     },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
+  ]
 }
 
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+   const [projects, setProjects] = useState<Project[]>([]);
+  useEffect(() => {
+    async function GetProjects()
+    {
+      const projects = await getProjects();
+      setProjects(projects.data)
+    }
+    GetProjects();
+  }, []);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={projects} />
         <NavMain items={data.navMain} />
       </SidebarContent>
       <ModeToggle />
