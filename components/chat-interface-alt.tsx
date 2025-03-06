@@ -125,7 +125,7 @@ export function ChatInterface({
       return (
         <Avatar className="h-8 w-8">
           <AvatarImage src={`/agents/${agent.id}.png`} alt={agent.name} />
-          <AvatarFallback className="bg-gradient-to-br from-violet-500 to-indigo-700 text-white">
+          <AvatarFallback className="bg-linear-to-br from-violet-500 to-indigo-700 text-white">
             {agent.name.charAt(0)}
           </AvatarFallback>
         </Avatar>
@@ -137,7 +137,7 @@ export function ChatInterface({
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
       {/* Header */}
-      <header className="border-b px-4 py-3 flex items-center justify-between bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b px-4 py-3 flex items-center justify-between bg-card/50 backdrop-blur-xs sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="md:hidden">
             <ChevronLeft className="h-5 w-5" />
@@ -145,7 +145,7 @@ export function ChatInterface({
 
           <Avatar className="h-9 w-9">
             <AvatarImage src={`/agents/${agent.id}.png`} alt={agent.name} />
-            <AvatarFallback className="bg-gradient-to-br from-violet-500 to-indigo-700 text-white">
+            <AvatarFallback className="bg-linear-to-br from-violet-500 to-indigo-700 text-white">
               {agent.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
@@ -317,7 +317,7 @@ export function ChatInterface({
       </div>
 
       {/* Input Area */}
-      <footer className="border-t p-4 bg-background/80 backdrop-blur-sm">
+      <footer className="border-t p-4 bg-background/80 backdrop-blur-xs">
         <form
           onSubmit={handleSendMessage}
           className="flex items-center gap-2 max-w-3xl mx-auto"
