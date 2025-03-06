@@ -40,16 +40,9 @@ export async function getProjects(): Promise<ApiResponse<Project[]>> {
   const mockProjects: Project[] = [
     {
       id: '1',
-      name: 'Personal Assistant',
+      name: 'Quantum DevOps',
       description: 'A personal assistant project for everyday tasks',
       userId: 'user1',
-      user: {
-        id: 'user1',
-        email: 'user@example.com',
-        name: 'John Doe',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -58,13 +51,6 @@ export async function getProjects(): Promise<ApiResponse<Project[]>> {
       name: 'Code Helper',
       description: 'AI assistant for coding tasks',
       userId: 'user1',
-      user: {
-        id: 'user1',
-        email: 'user@example.com',
-        name: 'John Doe',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -84,13 +70,6 @@ export async function getProject(id: string): Promise<ApiResponse<Project>> {
       ? 'A personal assistant project for everyday tasks' 
       : 'AI assistant for coding tasks',
     userId: 'user1',
-    user: {
-      id: 'user1',
-      email: 'user@example.com',
-      name: 'John Doe',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
     createdAt: new Date(),
     updatedAt: new Date()
   };
@@ -212,6 +191,37 @@ export async function getChat(id: string): Promise<ApiResponse<Chat>> {
   // return fetchAPI<ApiResponse<Chat>>(`/chats/${id}`);
 }
 
+export async function getChatProject(id: string): Promise<ApiResponse<Project>> {
+  // Mock data
+  const mockProject: Project = {
+      id: '1',
+      name: 'Quantum DevOps',
+      description: 'A personal assistant project for everyday tasks',
+      userId: 'user1',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+  return { data: mockProject };
+  // In production:
+  // return fetchAPI<ApiResponse<Chat>>(`/chats/project/${id}`);
+}
+
+export async function getChatAgent(id: string): Promise<ApiResponse<Agent>> {
+  // Mock data
+    const mockAgent: Agent = {
+    id: "1",
+    name: 'General Assistant',
+    description: 'A general-purpose AI assistant' ,
+    instructions: 'You are a helpful AI assistant.' ,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  };
+
+  return { data: mockAgent };
+  // In production:
+  // return fetchAPI<ApiResponse<Chat>>(`/chats/project/${id}`);
+}
 export async function createChat(data: { 
   name: string; 
   projectId: string; 

@@ -64,14 +64,11 @@ body {
   }
 }
 
-
-
-
 @layer base {
   * {
-    @apply border-border;
+    @apply border-[hsl(var(--border))];
   }
   body {
-    @apply  text-foreground;
+    @apply text-foreground;
   }
 }

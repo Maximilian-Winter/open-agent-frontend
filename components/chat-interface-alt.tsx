@@ -52,7 +52,7 @@ interface ChatInterfaceProps {
   onRenameChat: (name: string) => Promise<void>;
 }
 
-export function ChatInterfaceAlt({
+export function ChatInterface({
   chat,
   agent,
   messages,
