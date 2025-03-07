@@ -40,14 +40,6 @@ export interface Chat {
   updatedAt: Date;
 }
 
-// Message types
-export interface Message {
-  id: string;
-  chatId: string;
-  role: 'system' | 'assistant' | 'user';
-  content: string;
-  createdAt: Date;
-}
 
 // API response types
 export interface ApiResponse<T> {
